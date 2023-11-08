@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -6,23 +6,17 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float jumpHight = 5f;
-    [SerializeField] private bool isWall = false;
+    [SerializeField] private float jumpHeight = 5f;
 
-    [SerializeField] private GameObject right_wall;
-    [SerializeField] private GameObject left_wall;
     Rigidbody2D rb;
-    private Transform currentDirection;
+    Animator anim;
 
-    private bool isGround = true;
-    private float move;
-    private Vector3 rotate;
+    private bool isGround = false;
     
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        currentDirection = right_wall.transform;
-        rotate = transform.eulerAngles;
+        anim = GetComponent<Animator>();
     }
     void Start()
     {
@@ -32,57 +26,50 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        PlayerMoving();
-       
+        PlayerMove();
+        PlayerJump();
+    }
+    private void FixedUpdate()
+    {
+        anim.SetFloat("yVelocity", rb.velocity.y);
     }
 
     void PlayerMove()
     {
-        if (isGround)
+        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
+    }
+
+    void OnCollisionEnter2D(Collision2D collison)
+    {
+        if (collison.gameObject.tag == "CollisionObjects")
         {
-            rb.velocity = new Vector2(moveSpeed, 0);
-        }
-        else
-        {
-            rb.velocity = new Vector2(-moveSpeed, 0);
+            // Đảo ngược hướng di chuyển
+            moveSpeed = -moveSpeed;
+            Flip();
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "CollisionObject")
-        {
-            isGround = true;
-        }
-    }
-    private void PlayerMoving()
-    {
-        Vector2 direction = currentDirection.position - transform.position;
-        if (currentDirection == right_wall.transform)
-        {
-            rb.velocity = new Vector2(moveSpeed, 0);
-        }
-        else
-        {
-            rb.velocity = new Vector2(-moveSpeed, 0);
-        }
-
-        if (Vector2.Distance(transform.position, currentDirection.position) < 0.5f && currentDirection == right_wall.transform)
-        {
-            Flip();
-            currentDirection = left_wall.transform;
-        }
-        if (Vector2.Distance(transform.position, currentDirection.position) < 0.5f && currentDirection == left_wall.transform)
-        {
-            Flip();
-            currentDirection = right_wall.transform;
-        }
+        isGround = true;
+        anim.SetBool("isJumping", !isGround);
     }
 
     void Flip()
     {
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1f;
-        transform.localScale = localScale;
+        transform.localScale = new Vector2((-1) * transform.localScale.x, transform.localScale.y);
+       
     }
+
+    private void PlayerJump()
+    {
+        if (Input.GetButtonDown("Jump") && isGround)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpHeight);
+            anim.SetTrigger("isJumping");
+            anim.SetBool("isJumping", !isGround);
+            isGround = false;
+        }
+    }
+
 }
