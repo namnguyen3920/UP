@@ -5,71 +5,61 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float jumpHeight = 5f;
 
-    Rigidbody2D rb;
-    Animator anim;
+    private static PlayerController instance;
+    public static PlayerController Instance { get { return instance; } }
 
-    private bool isGround = false;
+    [Header("Layers")]
+    public LayerMask groundLayer;
+    public LayerMask rightWallLayer;
+    public LayerMask leftWallLayer;
+
+    public int wallSide;
+
+    [Space]
+
+    [Header("Collision")]
+
+    private float collisionRadius = 0.25f;
+    private Vector2 bottomOffset, rightOffset, leftOffset;
+    private Collider2D[] colliderStatus;
+
+    [SerializeField] Transform groundCheckCollision;
     
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-    }
-    void Start()
-    {
+
+    //private void Awake()
+    //{
+    //    if (instance == null) { instance = this; }
+
+    //}
+    //private void Start()
+    //{
         
-    }
+    //}
+    //void Update()
+    //{
+    //    wallSide = OnRightWall() ? -1 : 1;
+    //}
 
-    // Update is called once per frame
-    void Update()
-    {
-        PlayerMove();
-        PlayerJump();
-    }
-    private void FixedUpdate()
-    {
-        anim.SetFloat("yVelocity", rb.velocity.y);
-    }
+    //public bool OnGround()
+    //{
+    //    colliderStatus = Physics2D.OverlapCircleAll(groundCheckCollision.position, collisionRadius, groundLayer);
+    //    if(colliderStatus.Length == 0) { return true; }
+    //    else                            return false;
+    //}
 
-    void PlayerMove()
-    {
-        rb.velocity = new Vector2(moveSpeed, rb.velocity.y);
-    }
+    //public bool OnWall()
+    //{
+    //    return Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, rightWallLayer)
+    //        || Physics2D.OverlapCircle((Vector2)transform.position + leftOffset, collisionRadius, leftWallLayer);
+    //}
+    //public bool OnRightWall()
+    //{
+    //    return Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, rightWallLayer);
+    //}
 
-    void OnCollisionEnter2D(Collision2D collison)
-    {
-        if (collison.gameObject.tag == "CollisionObjects")
-        {
-            // Đảo ngược hướng di chuyển
-            moveSpeed = -moveSpeed;
-            Flip();
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        isGround = true;
-        anim.SetBool("isJumping", !isGround);
-    }
-
-    void Flip()
-    {
-        transform.localScale = new Vector2((-1) * transform.localScale.x, transform.localScale.y);
-       
-    }
-
-    private void PlayerJump()
-    {
-        if (Input.GetButtonDown("Jump") && isGround)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpHeight);
-            anim.SetTrigger("isJumping");
-            anim.SetBool("isJumping", !isGround);
-            isGround = false;
-        }
-    }
-
+    //public bool OnLeftWall()
+    //{
+    //    return Physics2D.OverlapCircle((Vector2)transform.position + leftOffset, collisionRadius, leftWallLayer);
+    //}
 }
