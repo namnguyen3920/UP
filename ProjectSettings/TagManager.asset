@@ -5,15 +5,18 @@ TagManager:
   serializedVersion: 2
   tags:
   - CollisionObjects
+  - Ground
+  - Collision
+  - Wall
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - CollisionObjects
   - Water
   - UI
-  - 
-  - 
+  - Ground
+  - Wall
   - 
   - 
   - 
