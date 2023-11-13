@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Layer")]
     public LayerMask groundLayer;
+    public LayerMask wallLayer;
 
     [Header("Velocity")]
     [SerializeField] private float moveSpeed = 3f;
@@ -24,11 +25,15 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Collision Check")]
     [SerializeField] Transform groundCheckCollision;
+    [SerializeField] Transform wallCheckCollision;
+    
     public int side = 1;
-    private float collisionRadius = 0.2f;
+    private float collisionRadius = 0.1f;
     private Collider2D[] colliderStatus;
     public bool canMove;
     [SerializeField] private bool isGrounded = false;
+    [SerializeField] private bool canWallSlide;
+    [SerializeField] private bool isWallSliding;
 
     private void Awake()
     {
@@ -42,53 +47,86 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        anim.SetFloat("yVelocity", rb.velocity.y);
         Running(side);
-        if (IsGround())
+        ChangeSideWhenCollided();
+        if (CheckGround())
         {
-            PlayerMove();
+            jumpLefts = maxJumps;
         }
-        if (jumpLefts > 0) {
-            if (Input.GetButtonDown("Jump") ) { PlayerJump(); }
-        } 
+        if(Input.GetButtonDown("Jump") && jumpLefts > 0)
+        {
+            PlayerJump();
+        }
+        SetAnimator();
     }
-    bool IsGround()
+    bool CheckGround()
     {
-        return Physics2D.OverlapCircle(groundCheckCollision.position, collisionRadius, groundLayer);
+       return Physics2D.OverlapCircle(groundCheckCollision.position, collisionRadius, groundLayer);
+    }
+
+    bool WallDetected()
+    {
+        return Physics2D.Raycast(wallCheckCollision.position, Vector2.right, collisionRadius, wallLayer);
+    }
+
+    
+
+    
+    #region Jump
+
+    private void PlayerJump()
+    {
+        jumpLefts =- 1;
+        rb.velocity = new Vector2(rb.velocity.x, jumpHeight);
         
     }
 
+
+    #endregion
+
+    #region Sub-funtion
+    void SetAnimator()
+    {
+        if (anim.GetFloat("yVelocity") == 0f)
+        {
+            anim.SetBool("isGround", true);
+            anim.SetBool("isJumping", false);
+        }
+        else
+        {
+            anim.SetBool("isGround", false);
+            anim.SetBool("isJumping", true);
+        }
+    }
     void Flip()
     {
         transform.localScale = new Vector2((-1) * transform.localScale.x, transform.localScale.y);
     }
-    void Running(int direction) 
+    void Running(int direction)
     {
-        
-        PlayerMove();
-        rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y); 
-    }
-    #region Jump n Move
-
-    void PlayerMove()
-    {
-        anim.SetBool("onGround", isGrounded);
-        jumpLefts = maxJumps;
-    }
-    private void PlayerJump()
-    {
-        anim.SetBool("onGround", !isGrounded);
-        anim.SetTrigger("Jumping");
-        rb.velocity = new Vector2(rb.velocity.x, jumpHeight);
-        jumpLefts -= 1;
+        rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    void ChangeSideWhenCollided()
     {
-        if (collision.gameObject.tag == "Wall")
+        if (WallDetected())
         {
+            collisionRadius = -collisionRadius;
             side = -side;
             Flip();
+            Running(side);
         }
     }
+
     #endregion
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawLine(wallCheckCollision.position, new Vector3(wallCheckCollision.position.x + collisionRadius,
+                                                                 wallCheckCollision.position.y,
+                                                                 wallCheckCollision.position.z));
+
+        Gizmos.DrawSphere(groundCheckCollision.position, collisionRadius);
+    }
 }
