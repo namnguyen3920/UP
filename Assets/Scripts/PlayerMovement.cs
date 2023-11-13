@@ -15,8 +15,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Velocity")]
     [SerializeField] private float moveSpeed = 3f;
     [SerializeField] private float jumpHeight = 5f;
-
-    [Space]
+    private float yVelocity;
 
     [Header("Counter")]
     [SerializeField] private int maxJumps = 2;
@@ -28,8 +27,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform wallCheckCollision;
     
     public int side = 1;
-    private float collisionRadius = 0.1f;
-    private Collider2D[] colliderStatus;
+    private float collisionRadius = 0.2f;
     public bool canMove;
     [SerializeField] private bool isGrounded = false;
     [SerializeField] private bool canWallSlide;
@@ -48,17 +46,31 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         anim.SetFloat("yVelocity", rb.velocity.y);
-        Running(side);
         ChangeSideWhenCollided();
         if (CheckGround())
         {
+            Running(side);
             jumpLefts = maxJumps;
         }
         if(Input.GetButtonDown("Jump") && jumpLefts > 0)
         {
             PlayerJump();
         }
+
         SetAnimator();
+    }
+
+    private void FixedUpdate()
+    {
+        if(WallDetected() && canWallSlide)
+        {
+            isWallSliding = true;
+        }
+        else
+        {
+            Running(side);
+            ChangeSideWhenCollided();
+        }
     }
     bool CheckGround()
     {
@@ -70,7 +82,6 @@ public class PlayerMovement : MonoBehaviour
         return Physics2D.Raycast(wallCheckCollision.position, Vector2.right, collisionRadius, wallLayer);
     }
 
-    
 
     
     #region Jump
@@ -79,9 +90,16 @@ public class PlayerMovement : MonoBehaviour
     {
         jumpLefts =- 1;
         rb.velocity = new Vector2(rb.velocity.x, jumpHeight);
-        
+        yVelocity = anim.GetFloat("yVelocity");
     }
 
+    private void PlayerWallSlide()
+    {
+        if (!CheckGround() && rb.velocity.y < 0.1)
+        {
+            canWallSlide = true;
+        }
+    }
 
     #endregion
 
@@ -98,6 +116,7 @@ public class PlayerMovement : MonoBehaviour
             anim.SetBool("isGround", false);
             anim.SetBool("isJumping", true);
         }
+        anim.SetBool("isWallSliding", isWallSliding);
     }
     void Flip()
     {
