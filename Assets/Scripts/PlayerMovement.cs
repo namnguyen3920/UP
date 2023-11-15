@@ -1,151 +1,181 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    Rigidbody2D rb;
-    Animator anim;
-
-    [Header("Layer")]
-    public LayerMask groundLayer;
-    public LayerMask wallLayer;
-
-    [Header("Velocity")]
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float jumpHeight = 5f;
-    private float yVelocity;
-
-    [Header("Counter")]
-    [SerializeField] private int maxJumps = 2;
-    [SerializeField] private int jumpLefts;
-
-
-    [Header("Collision Check")]
-    [SerializeField] Transform groundCheckCollision;
-    [SerializeField] Transform wallCheckCollision;
+    [Header("For Movement")]
+    [SerializeField] float moveSpeed = 3f;
+    //[SerializeField] float airMoveSpeed = 10f;
     
-    public int side = 1;
-    private float collisionRadius = 0.2f;
-    public bool canMove;
-    [SerializeField] private bool isGrounded = false;
-    [SerializeField] private bool canWallSlide;
-    [SerializeField] private bool isWallSliding;
+    private float XDirectional;
+    private bool isMoving;
 
-    private void Awake()
+    [Header("For Jumping")]
+    [SerializeField] float jumpForce;
+    [SerializeField] LayerMask groundLayer;
+    [SerializeField] Transform groundCheckPoint;
+    [SerializeField] Vector2 groundCheckSize;
+    private bool grounded;
+    private bool isJumping;
+    private bool canJump;
+
+    [Header("For WallSliding")]
+    [SerializeField] float wallSlideSpeed;
+    [SerializeField] LayerMask wallLayer;
+    [SerializeField] Transform wallCheckPoint;
+    [SerializeField] Vector2 wallCheckSize;
+    private bool isTouchingWall;
+    private bool isWallSliding;
+
+    [Header("For WallJumping")]
+    [SerializeField] float walljumpforce;
+    [SerializeField] Vector2 walljumpAngle;
+
+    [Header("Other")]
+    [SerializeField] Animator anim;
+    [SerializeField] int direction = 1;
+    Rigidbody2D rb;
+
+
+
+    private void Start()
     {
-        jumpLefts = maxJumps;
-    }
-    void Start()
-    {
+        
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        walljumpAngle.Normalize();
+
     }
 
-    void Update()
+    private void Update()
     {
-        anim.SetFloat("yVelocity", rb.velocity.y);
-        ChangeSideWhenCollided();
-        if (CheckGround())
-        {
-            Running(side);
-            jumpLefts = maxJumps;
-        }
-        if(Input.GetButtonDown("Jump") && jumpLefts > 0)
-        {
-            PlayerJump();
-        }
-
-        SetAnimator();
+        XDirectional = transform.position.x;
+        Inputs();
+        CheckWorld();
+        AnimationControl();
     }
 
     private void FixedUpdate()
     {
-        if(WallDetected() && canWallSlide)
+        Movement(direction);
+        Jump();
+        WallSlide();
+        WallJump();
+    }
+
+    void Inputs()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && (grounded || isWallSliding))
         {
-            isWallSliding = true;
+            canJump = true;
+        }
+    }
+    void CheckWorld()
+    {
+        grounded = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer);
+        isTouchingWall = Physics2D.OverlapBox(wallCheckPoint.position, wallCheckSize, 0, wallLayer);
+    }
+
+    void Movement(int direction)
+    {
+        //for Animation
+        if (XDirectional != 0)
+        {
+            isMoving = true;
         }
         else
         {
-            Running(side);
-            ChangeSideWhenCollided();
+            isMoving = false;
         }
-    }
-    bool CheckGround()
-    {
-       return Physics2D.OverlapCircle(groundCheckCollision.position, collisionRadius, groundLayer);
-    }
 
-    bool WallDetected()
-    {
-        return Physics2D.Raycast(wallCheckCollision.position, Vector2.right, collisionRadius, wallLayer);
-    }
-
-
-    
-    #region Jump
-
-    private void PlayerJump()
-    {
-        jumpLefts =- 1;
-        rb.velocity = new Vector2(rb.velocity.x, jumpHeight);
-        yVelocity = anim.GetFloat("yVelocity");
-    }
-
-    private void PlayerWallSlide()
-    {
-        if (!CheckGround() && rb.velocity.y < 0.1)
+        //for movement
+        if (grounded)
         {
-            canWallSlide = true;
+            isJumping = false;
+            rb.velocity = new Vector2(moveSpeed * direction, rb.velocity.y);
+        }
+        //else if (!grounded && (!isWallSliding || !isTouchingWall) && XDirectional != 0)
+        //{
+        //    //rb.AddForce(new Vector2(direction, 0));
+        //    //if (Mathf.Abs(rb.velocity.x) > moveSpeed)
+        //    //{
+        //    //    rb.velocity = new Vector2(XDirectional * moveSpeed, rb.velocity.y);
+        //    //}
+        //}
+
+        //for fliping
+        if (XDirectional < 0)
+        {
+            Flip();
+        }
+        else if (XDirectional > 0)
+        {
+            Flip();
         }
     }
 
-    #endregion
-
-    #region Sub-funtion
-    void SetAnimator()
-    {
-        if (anim.GetFloat("yVelocity") == 0f)
-        {
-            anim.SetBool("isGround", true);
-            anim.SetBool("isJumping", false);
-        }
-        else
-        {
-            anim.SetBool("isGround", false);
-            anim.SetBool("isJumping", true);
-        }
-        anim.SetBool("isWallSliding", isWallSliding);
-    }
     void Flip()
     {
-        transform.localScale = new Vector2((-1) * transform.localScale.x, transform.localScale.y);
-    }
-    void Running(int direction)
-    {
-        rb.velocity = new Vector2(direction * moveSpeed, rb.velocity.y);
-    }
-
-    void ChangeSideWhenCollided()
-    {
-        if (WallDetected())
+        if (isTouchingWall)
         {
-            collisionRadius = -collisionRadius;
-            side = -side;
-            Flip();
-            Running(side);
+            direction *= -1;
+            transform.Rotate(0, 180, 0);
         }
     }
 
-    #endregion
-
-    private void OnDrawGizmos()
+    void Jump()
     {
-        Gizmos.DrawLine(wallCheckCollision.position, new Vector3(wallCheckCollision.position.x + collisionRadius,
-                                                                 wallCheckCollision.position.y,
-                                                                 wallCheckCollision.position.z));
+        if (canJump && (grounded || isWallSliding))
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            isJumping = true;
+            canJump = false;
+        }
+    }
 
-        Gizmos.DrawSphere(groundCheckCollision.position, collisionRadius);
+    void WallSlide()
+    {
+        
+        if (isTouchingWall && !grounded && rb.velocity.y < (0.8 * jumpForce))
+        {
+            isWallSliding = true;
+            Debug.Log("Sliding");
+            rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
+        }
+        else
+        {
+            isWallSliding = false;
+        }
+
+        if (isWallSliding)
+        {
+            WallJump();
+        }
+    }
+    void WallJump()
+    {
+        if (isWallSliding && canJump)        {
+
+            rb.AddForce(new Vector2(walljumpforce * walljumpAngle.x, walljumpforce * walljumpAngle.y), ForceMode2D.Impulse);
+            Flip();
+            canJump = false;
+        }
+    }
+
+    void AnimationControl()
+    {
+        anim.SetBool("isGround", isMoving);
+        anim.SetBool("isGround", grounded);
+        anim.SetBool("isJumping", isJumping);
+        anim.SetBool("isWallSliding", isTouchingWall);
+    }
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawCube(groundCheckPoint.position, groundCheckSize);
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(wallCheckPoint.position, wallCheckSize);
+
     }
 }

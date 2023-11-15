@@ -11,8 +11,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Layers")]
     public LayerMask groundLayer;
-    public LayerMask rightWallLayer;
-    public LayerMask leftWallLayer;
+    public LayerMask wallLayer;
 
     public int wallSide;
 
@@ -20,42 +19,41 @@ public class PlayerController : MonoBehaviour
 
     [Header("Collision")]
 
-    private float collisionRadius = 0.25f;
+    private float collisionRadius = 0.2f;
     private Vector2 bottomOffset, rightOffset, leftOffset;
     private Collider2D[] colliderStatus;
 
     [SerializeField] Transform groundCheckCollision;
+    [SerializeField] Transform wallCheckCollision;
+
+    private void Awake()
+    {
+        if (instance == null) { instance = this; }
+
+    }
+
+    void Update()
+    {
+        wallSide = OnWall() ? -1 : 1;
+    }
+
+    public bool OnGround()
+    {
+        return Physics2D.OverlapCircle(groundCheckCollision.position, collisionRadius, groundLayer);
+        
+    }
+
+    public bool OnWall()
+    {
+        return Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, wallLayer);
+    }
+
     
 
-    //private void Awake()
+    
+    //public bool OntWall()
     //{
-    //    if (instance == null) { instance = this; }
-
-    //}
-    //private void Start()
-    //{
-        
-    //}
-    //void Update()
-    //{
-    //    wallSide = OnRightWall() ? -1 : 1;
-    //}
-
-    //public bool OnGround()
-    //{
-    //    colliderStatus = Physics2D.OverlapCircleAll(groundCheckCollision.position, collisionRadius, groundLayer);
-    //    if(colliderStatus.Length == 0) { return true; }
-    //    else                            return false;
-    //}
-
-    //public bool OnWall()
-    //{
-    //    return Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, rightWallLayer)
-    //        || Physics2D.OverlapCircle((Vector2)transform.position + leftOffset, collisionRadius, leftWallLayer);
-    //}
-    //public bool OnRightWall()
-    //{
-    //    return Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, rightWallLayer);
+    //    return Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, wallLayer);
     //}
 
     //public bool OnLeftWall()
