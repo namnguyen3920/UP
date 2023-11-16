@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Transform groundCheckPoint;
     [SerializeField] Vector2 groundCheckSize;
+    //[SerializeField] float jumpCounter;
     private bool grounded;
     private bool isJumping;
     private bool canJump;
@@ -25,7 +26,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float wallSlideSpeed;
     [SerializeField] LayerMask wallLayer;
     [SerializeField] Transform wallCheckPoint;
+    [SerializeField] Transform onWallCheckPoint;
     [SerializeField] Vector2 wallCheckSize;
+    private bool onWall;
     private bool isTouchingWall;
     private bool isWallSliding;
 
@@ -54,6 +57,8 @@ public class PlayerMovement : MonoBehaviour
         Inputs();
         CheckWorld();
         AnimationControl();
+        
+        
     }
 
     private void FixedUpdate()
@@ -66,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Inputs()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && (grounded || isWallSliding))
+        if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
         {
             canJump = true;
         }
@@ -75,6 +80,7 @@ public class PlayerMovement : MonoBehaviour
     {
         grounded = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer);
         isTouchingWall = Physics2D.OverlapBox(wallCheckPoint.position, wallCheckSize, 0, wallLayer);
+        onWall = Physics2D.OverlapBox(onWallCheckPoint.position, wallCheckSize, 0, wallLayer);
     }
 
     void Movement(int direction)
@@ -95,14 +101,6 @@ public class PlayerMovement : MonoBehaviour
             isJumping = false;
             rb.velocity = new Vector2(moveSpeed * direction, rb.velocity.y);
         }
-        //else if (!grounded && (!isWallSliding || !isTouchingWall) && XDirectional != 0)
-        //{
-        //    //rb.AddForce(new Vector2(direction, 0));
-        //    //if (Mathf.Abs(rb.velocity.x) > moveSpeed)
-        //    //{
-        //    //    rb.velocity = new Vector2(XDirectional * moveSpeed, rb.velocity.y);
-        //    //}
-        //}
 
         //for fliping
         if (XDirectional < 0)
@@ -126,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        if (canJump && (grounded || isWallSliding))
+        if (canJump && grounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             isJumping = true;
@@ -137,10 +135,9 @@ public class PlayerMovement : MonoBehaviour
     void WallSlide()
     {
         
-        if (isTouchingWall && !grounded && rb.velocity.y < (0.8 * jumpForce))
+        if (onWall && !grounded && rb.velocity.y < 0)
         {
             isWallSliding = true;
-            Debug.Log("Sliding");
             rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
         }
         else
@@ -155,11 +152,11 @@ public class PlayerMovement : MonoBehaviour
     }
     void WallJump()
     {
-        if (isWallSliding && canJump)        {
-
-            rb.AddForce(new Vector2(walljumpforce * walljumpAngle.x, walljumpforce * walljumpAngle.y), ForceMode2D.Impulse);
-            Flip();
+        if (canJump && onWall)
+        {
+            rb.AddForce(new Vector2(walljumpforce * walljumpAngle.x * direction, walljumpforce * walljumpAngle.y), ForceMode2D.Impulse);
             canJump = false;
+            Flip();
         }
     }
 
@@ -176,6 +173,7 @@ public class PlayerMovement : MonoBehaviour
         Gizmos.DrawCube(groundCheckPoint.position, groundCheckSize);
         Gizmos.color = Color.green;
         Gizmos.DrawCube(wallCheckPoint.position, wallCheckSize);
-
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(onWallCheckPoint.position, wallCheckSize);
     }
 }
