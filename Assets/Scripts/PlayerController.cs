@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        wallSide = OnWall() ? -1 : 1;
+        //wallSide = OnWall() ? -1 : 1;
     }
 
     public bool OnGround()
@@ -43,10 +43,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    public bool OnWall()
-    {
-        return Physics2D.OverlapCircle((Vector2)transform.position + rightOffset, collisionRadius, wallLayer);
-    }
+    
 
     
 

@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("For Movement")]
     [SerializeField] float moveSpeed = 3f;
-    //[SerializeField] float airMoveSpeed = 10f;
     
     private float XDirectional;
     private bool isMoving;
@@ -17,7 +16,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask groundLayer;
     [SerializeField] Transform groundCheckPoint;
     [SerializeField] Vector2 groundCheckSize;
-    //[SerializeField] float jumpCounter;
+    [SerializeField] float jumpCounter;
+    private float coyoteTime;
+    private float fallBuffer = 0.2f;
     private bool grounded;
     private bool isJumping;
     private bool canJump;
@@ -53,12 +54,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if(coyoteTime > 0)
+        {
+            coyoteTime -= Time.deltaTime;
+        }
+
         XDirectional = transform.position.x;
         Inputs();
         CheckWorld();
         AnimationControl();
-        
-        
     }
 
     private void FixedUpdate()
@@ -73,7 +77,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
         {
-            canJump = true;
+            if(jumpCounter <= 2) { 
+                canJump = true;
+            }
         }
     }
     void CheckWorld()
@@ -98,6 +104,7 @@ public class PlayerMovement : MonoBehaviour
         //for movement
         if (grounded)
         {
+            jumpCounter = 0;
             isJumping = false;
             rb.velocity = new Vector2(moveSpeed * direction, rb.velocity.y);
         }
@@ -122,6 +129,16 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void JumpReset()
+    {
+        if(jumpCounter < 2) 
+        { 
+            jumpCounter += 1;
+            canJump = true;
+        }
+        else canJump = false;
+    }
+
     void Jump()
     {
         if (canJump && grounded)
@@ -131,18 +148,18 @@ public class PlayerMovement : MonoBehaviour
             canJump = false;
         }
     }
-
     void WallSlide()
     {
-        
-        if (onWall && !grounded && rb.velocity.y < 0)
-        {
-            isWallSliding = true;
-            rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
-        }
-        else
-        {
-            isWallSliding = false;
+        if (!isTouchingWall) { 
+            if (onWall && !grounded && rb.velocity.y < 0)
+            {
+                isWallSliding = true;
+                rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
+            }
+            else
+            {
+                isWallSliding = false;
+            }
         }
 
         if (isWallSliding)
