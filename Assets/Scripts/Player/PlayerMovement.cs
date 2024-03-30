@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
     private float fallBuffer = 0.2f;
     private bool grounded;
     private bool isJumping;
-    private bool canJump;
+    public bool canJump;
 
     [Header("For WallSliding")]
     [SerializeField] float wallSlideSpeed;
@@ -49,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
         
         rb = GetComponent<Rigidbody2D>();
         walljumpAngle.Normalize();
-
     }
 
     private void Update()
@@ -77,9 +76,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
         {
-            if(jumpCounter <= 2) { 
-                canJump = true;
-            }
+            canJump = true;
         }
     }
     void CheckWorld()
@@ -117,16 +114,18 @@ public class PlayerMovement : MonoBehaviour
         else if (XDirectional > 0)
         {
             Flip();
+            
         }
     }
 
-    void Flip()
+    public void Flip()
     {
-        if (isTouchingWall)
+        if (isTouchingWall) 
         {
             direction *= -1;
             transform.Rotate(0, 180, 0);
         }
+            
     }
 
     void JumpReset()
@@ -150,16 +149,14 @@ public class PlayerMovement : MonoBehaviour
     }
     void WallSlide()
     {
-        if (!isTouchingWall) { 
-            if (onWall && !grounded && rb.velocity.y < 0)
-            {
-                isWallSliding = true;
-                rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
-            }
-            else
-            {
-                isWallSliding = false;
-            }
+        if (onWall && !grounded && rb.velocity.y < 0)
+         {
+             isWallSliding = true;
+             rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
+        }
+        else
+        {
+            isWallSliding = false;
         }
 
         if (isWallSliding)
