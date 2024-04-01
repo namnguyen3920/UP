@@ -1,52 +1,30 @@
-using DG.Tweening;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class GroundEnemies : EnemyCtrl
+public abstract class GroundEnemies : MonoBehaviour
 {
     [Header("Checking Collision")]
-    //[SerializeField] protected float moveSpeed;
     [SerializeField] private Transform checkPointCollision;
     [SerializeField] private Transform checkPointGround;
     [SerializeField] Vector2 collisionCheckSize;
     [SerializeField] LayerMask collisionLayerMask;
     [SerializeField] LayerMask groundLayerMask;
     [SerializeField] float groundCheckRadius;
-    int direction = -1;
-
-    private void Awake()
-    {
-        
-    } 
+    protected int direction = -1;
     
     private void Update()
     {
         CollisionCheck();
-        Moving(direction);
-        //PatrolMoment();
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("PlayerFeet"))
-        {
-            StartCoroutine(DeadAnimation());
-        }
     }
 
     bool IsCollision()
     {
         return Physics2D.OverlapBox(checkPointCollision.position, collisionCheckSize, 0, collisionLayerMask);
     }
-
     bool IsGrounded()
     {
         return Physics2D.OverlapCircle(checkPointGround.position, groundCheckRadius, groundLayerMask);
     }
-
-    void CollisionCheck()
+    protected void CollisionCheck()
     {
         if (IsCollision() || !IsGrounded())
         {

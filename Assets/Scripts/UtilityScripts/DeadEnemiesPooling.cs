@@ -2,16 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DeadEnemiesPooling : MonoBehaviour
+public class DeadEnemiesPooling : Singleton_Mono_Method<DeadEnemiesPooling>
 {
-    [SerializeField] protected List<GroundEnemies> DeadEnemiesPool;
+    [SerializeField] protected List<Transform> DeadEnemiesPool = new();
 
-    public void SetEnemiesInactive(GroundEnemies d_enemies)
+    public void ReturnEnemiesToPool(Transform d_enemies)
     {
         DeadEnemiesPool.Add(d_enemies);
-        d_enemies.gameObject.SetActive(false);
-        Debug.Log("Enemy added to pool");
+        foreach (var e in DeadEnemiesPool)
+        {
+            InactiveDeadEnemy(DeadEnemiesPool);
+        }
     }
 
-    
+
+
+    public virtual void InactiveDeadEnemy(List<Transform> pools)
+    {
+        foreach(Transform e in pools)
+        {
+            e.gameObject.SetActive(false);
+        }
+    }
 }
