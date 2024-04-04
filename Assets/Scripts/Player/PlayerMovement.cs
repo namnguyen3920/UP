@@ -3,65 +3,41 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : PlayerController
 {
     [Header("For Movement")]
     [SerializeField] float moveSpeed = 3f;
-    
     private float XDirectional;
-    private bool isMoving;
-
+ 
     [Header("For Jumping")]
-    [SerializeField] float jumpForce;
-    [SerializeField] LayerMask groundLayer;
-    [SerializeField] Transform groundCheckPoint;
-    [SerializeField] Vector2 groundCheckSize;
+    [SerializeField] float jumpForce = 5.5f;
     [SerializeField] float jumpCounter;
     private float coyoteTime;
-    private float fallBuffer = 0.2f;
-    private bool grounded;
-    private bool isJumping;
-    public bool canJump;
 
     [Header("For WallSliding")]
-    [SerializeField] float wallSlideSpeed;
-    [SerializeField] LayerMask wallLayer;
-    [SerializeField] Transform wallCheckPoint;
-    [SerializeField] Transform onWallCheckPoint;
-    [SerializeField] Vector2 wallCheckSize;
-    private bool onWall;
-    private bool isTouchingWall;
-    private bool isWallSliding;
+    [SerializeField] float wallSlideSpeed = 1.5f;
 
     [Header("For WallJumping")]
-    [SerializeField] float walljumpforce;
-    [SerializeField] Vector2 walljumpAngle;
+    [SerializeField] float walljumpforce = 6;
+    [SerializeField] Vector2 walljumpAngle = new Vector2 (0.4f, 1.1f);
+
 
     [Header("Other")]
-    [SerializeField] Animator anim;
     [SerializeField] int direction = 1;
-    Rigidbody2D rb;
-
-
 
     private void Start()
     {
-        
-        rb = GetComponent<Rigidbody2D>();
         walljumpAngle.Normalize();
     }
-
-    private void Update()
+    protected override void Update()
     {
-        if(coyoteTime > 0)
+        base.Update();
+        if (coyoteTime > 0)
         {
             coyoteTime -= Time.deltaTime;
         }
 
         XDirectional = transform.position.x;
-        Inputs();
-        CheckWorld();
-        AnimationControl();
     }
 
     private void FixedUpdate()
@@ -70,20 +46,6 @@ public class PlayerMovement : MonoBehaviour
         Jump();
         WallSlide();
         WallJump();
-    }
-
-    void Inputs()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
-        {
-            canJump = true;
-        }
-    }
-    void CheckWorld()
-    {
-        grounded = Physics2D.OverlapBox(groundCheckPoint.position, groundCheckSize, 0, groundLayer);
-        isTouchingWall = Physics2D.OverlapBox(wallCheckPoint.position, wallCheckSize, 0, wallLayer);
-        onWall = Physics2D.OverlapBox(onWallCheckPoint.position, wallCheckSize, 0, wallLayer);
     }
 
     void Movement(int direction)
@@ -147,6 +109,7 @@ public class PlayerMovement : MonoBehaviour
             canJump = false;
         }
     }
+
     void WallSlide()
     {
         if (onWall && !grounded && rb.velocity.y < 0)
@@ -174,20 +137,5 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void AnimationControl()
-    {
-        anim.SetBool("isGround", isMoving);
-        anim.SetBool("isGround", grounded);
-        anim.SetBool("isJumping", isJumping);
-        anim.SetBool("isWallSliding", isTouchingWall);
-    }
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.blue;
-        Gizmos.DrawCube(groundCheckPoint.position, groundCheckSize);
-        Gizmos.color = Color.green;
-        Gizmos.DrawCube(wallCheckPoint.position, wallCheckSize);
-        Gizmos.color = Color.green;
-        Gizmos.DrawCube(onWallCheckPoint.position, wallCheckSize);
-    }
+    
 }

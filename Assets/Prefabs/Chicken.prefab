@@ -186,6 +186,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 462db932a7c7b5040b0883e8949bfd80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemiesPrefabs: {fileID: 2927410753375382989}
   checkPointCollision: {fileID: 524971134831415787}
   checkPointGround: {fileID: 1320302747500566898}
   collisionCheckSize: {x: 0.14, y: 0.27}
@@ -196,8 +197,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheckRadius: 0.06
-  enemiesPrefabs: {fileID: 2927410753375382989}
-  moveSpeed: 1
+  chicken_anim: {fileID: 0}
+  chicken_speed: 1
 --- !u!1 &4184692869710115240
 GameObject:
   m_ObjectHideFlags: 0

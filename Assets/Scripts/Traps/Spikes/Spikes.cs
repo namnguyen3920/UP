@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Spikes : PlayerLife
+public class Spikes : TrapsMN
 {
     
 }

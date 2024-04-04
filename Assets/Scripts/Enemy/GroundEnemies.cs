@@ -1,6 +1,7 @@
+using System.Collections;
 using UnityEngine;
 
-public abstract class GroundEnemies : MonoBehaviour
+public abstract class GroundEnemies : Enemy
 {
     [Header("Checking Collision")]
     [SerializeField] private Transform checkPointCollision;
@@ -9,9 +10,8 @@ public abstract class GroundEnemies : MonoBehaviour
     [SerializeField] LayerMask collisionLayerMask;
     [SerializeField] LayerMask groundLayerMask;
     [SerializeField] float groundCheckRadius;
-    protected int direction = -1;
-    
-    private void Update()
+
+    protected virtual void Update()
     {
         CollisionCheck();
     }
@@ -39,5 +39,14 @@ public abstract class GroundEnemies : MonoBehaviour
         Gizmos.DrawCube(checkPointCollision.position, collisionCheckSize);
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(checkPointGround.position, groundCheckRadius);
+    }
+
+    protected virtual IEnumerator DeadPropertiesSettings()
+    {
+        GetComponent<CapsuleCollider2D>().enabled = false;
+        GetComponentInChildren<GroundEnemies>().enabled = false;
+        rb.gravityScale = 2;
+        yield return new WaitForSeconds(1f);
+        DeadEnemiesPooling.d_Instance.ReturnEnemiesToPool(enemiesPrefabs);
     }
 }

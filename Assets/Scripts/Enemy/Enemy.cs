@@ -1,11 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
-public class Enemy : GroundEnemies
+public abstract class Enemy : Singleton_Mono_Method<Enemy>
 {
-    [SerializeField] Transform enemiesPrefabs;
-    [SerializeField] protected float moveSpeed;
+    protected int moveSpeed;
+    protected int direction = -1;
+
+    [SerializeField] protected Transform enemiesPrefabs;
     protected Rigidbody2D rb;
     protected DeadEnemiesPooling enemiesPool;
 
@@ -14,18 +15,17 @@ public class Enemy : GroundEnemies
         rb = GetComponent<Rigidbody2D>();
     }
 
-    protected virtual void Moving(int direction)
+    protected virtual void Moving(int direction, float moveSpeed)
     {
         rb.velocity = new Vector2(moveSpeed * direction, rb.velocity.y);
     }
 
-    protected virtual IEnumerator DeadPropertiesSettings()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        AnimationMN.d_Instance.EnemyAnimUpdate_Dead();
-        GetComponent<CapsuleCollider2D>().enabled = false;
-        GetComponentInChildren<GroundEnemies>().enabled = false;
-        rb.gravityScale = 2;
-        yield return new WaitForSeconds(1f);
-        DeadEnemiesPooling.d_Instance.ReturnEnemiesToPool(enemiesPrefabs);
+        if (collision.gameObject.CompareTag("Traps") || collision.gameObject.CompareTag("Enemy"))
+        {
+            PlayerController.d_Instance.Die();
+        }
     }
+
 }
