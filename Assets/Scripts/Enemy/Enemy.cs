@@ -7,10 +7,11 @@ public abstract class Enemy : Singleton_Mono_Method<Enemy>
     protected int direction = -1;
 
     [SerializeField] protected Transform enemiesPrefabs;
+    [SerializeField] Transform hitbox;
     protected Rigidbody2D rb;
     protected DeadEnemiesPooling enemiesPool;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
@@ -19,13 +20,8 @@ public abstract class Enemy : Singleton_Mono_Method<Enemy>
     {
         rb.velocity = new Vector2(moveSpeed * direction, rb.velocity.y);
     }
-
-    private void OnCollisionEnter2D(Collision2D collision)
+    protected virtual void DeadAnimation(Animator enemy_aim, string e_dead)
     {
-        if (collision.gameObject.CompareTag("Traps") || collision.gameObject.CompareTag("Enemy"))
-        {
-            PlayerController.d_Instance.Die();
-        }
+        AnimationMN.d_Instance.SetTriggerAction(enemy_aim, e_dead);
     }
-
 }

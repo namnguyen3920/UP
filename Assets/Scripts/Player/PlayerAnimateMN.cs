@@ -2,26 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class PlayerAnimateMN : PlayerController
+public class PlayerAnimateMN : MonoBehaviour
 {
-    [SerializeField] protected Animator player_anim;
+    /*private const string IS_Ground = "isGround";
+    private const string IS_JUMPING = "isJumping";
+    private const string IS_WALLSLIDING = "isWallSliding";
+    private const string IS_DEAD = "Death";
 
-    protected override void Update()
+    private PlayerMovement player;
+    [SerializeField] Animator anim;
+
+    private void Update()
     {
-        base.Update();
-        AnimateUpdate += AnimationBoolControl;
-        AnimateUpdate += AnimationTriggerControl;
+        AnimationBoolControl();
+        AnimationTriggerControl();
     }
+
     private void AnimationBoolControl()
     {
-        AnimationMN.d_Instance.SetBoolMovement(player_anim, "isGround", isMoving);
-        AnimationMN.d_Instance.SetBoolMovement(player_anim, "isGround", grounded);
-        AnimationMN.d_Instance.SetBoolMovement(player_anim, "isJumping", isJumping);
-        AnimationMN.d_Instance.SetBoolMovement(player_anim, "isWallSliding", isTouchingWall);        
+        AnimationMN.d_Instance.SetBoolAction(anim, IS_Ground, player.IsGround());
+        AnimationMN.d_Instance.SetBoolAction(anim, IS_JUMPING, player.IsJumping());
+        AnimationMN.d_Instance.SetBoolAction(anim, IS_WALLSLIDING, player.IsWallSliding());
     }
 
     private void AnimationTriggerControl()
     {
-        if(isDead) { AnimationMN.d_Instance.SetTriggerDead(player_anim, "Death"); }        
-    }
+        AnimationMN.d_Instance.SetTriggerAction(anim, IS_DEAD);
+    }*/
 }

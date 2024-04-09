@@ -8,9 +8,10 @@ public class PlayerMovement : PlayerController
     [Header("For Movement")]
     [SerializeField] float moveSpeed = 3f;
     private float XDirectional;
- 
+    
+
     [Header("For Jumping")]
-    [SerializeField] float jumpForce = 5.5f;
+    [SerializeField] float jumpForce = 5.4f;
     [SerializeField] float jumpCounter;
     private float coyoteTime;
 
@@ -18,9 +19,8 @@ public class PlayerMovement : PlayerController
     [SerializeField] float wallSlideSpeed = 1.5f;
 
     [Header("For WallJumping")]
-    [SerializeField] float walljumpforce = 6;
-    [SerializeField] Vector2 walljumpAngle = new Vector2 (0.4f, 1.1f);
-
+    [SerializeField] float walljumpforce = 7;
+    [SerializeField] Vector2 walljumpAngle = new Vector2 (0.35f, 1f);
 
     [Header("Other")]
     [SerializeField] int direction = 1;
@@ -29,19 +29,27 @@ public class PlayerMovement : PlayerController
     {
         walljumpAngle.Normalize();
     }
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     protected override void Update()
     {
         base.Update();
-        if (coyoteTime > 0)
+        /*if (coyoteTime > 0)
         {
             coyoteTime -= Time.deltaTime;
-        }
+        }*/
 
         XDirectional = transform.position.x;
+        
     }
 
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
+        base.FixedUpdate();
         Movement(direction);
         Jump();
         WallSlide();
@@ -51,7 +59,7 @@ public class PlayerMovement : PlayerController
     void Movement(int direction)
     {
         //for Animation
-        if (XDirectional != 0)
+        if (XDirectional != 0 && IsGround)
         {
             isMoving = true;
         }
@@ -61,39 +69,25 @@ public class PlayerMovement : PlayerController
         }
 
         //for movement
-        if (grounded)
+        if (IsGround)
         {
             jumpCounter = 0;
             isJumping = false;
             rb.velocity = new Vector2(moveSpeed * direction, rb.velocity.y);
         }
-
-        //for fliping
-        if (XDirectional < 0)
-        {
-            Flip();
-        }
-        else if (XDirectional > 0)
-        {
-            Flip();
-            
-        }
+        if(IsTouchingWall()) { Flip(); }
     }
 
-    public void Flip()
+    private void Flip()
     {
-        if (isTouchingWall) 
-        {
-            direction *= -1;
-            transform.Rotate(0, 180, 0);
-        }
-            
+        direction *= -1;
+        transform.Rotate(0, 180, 0);
     }
 
     void JumpReset()
     {
         if(jumpCounter < 2) 
-        { 
+        {
             jumpCounter += 1;
             canJump = true;
         }
@@ -102,7 +96,7 @@ public class PlayerMovement : PlayerController
 
     void Jump()
     {
-        if (canJump && grounded)
+        if (canJump && IsGround)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             isJumping = true;
@@ -112,12 +106,12 @@ public class PlayerMovement : PlayerController
 
     void WallSlide()
     {
-        if (onWall && !grounded && rb.velocity.y < 0)
-         {
-             isWallSliding = true;
-             rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
+        if (onWall && VelocityY < 0.01)
+        {
+            isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x, -wallSlideSpeed);
         }
-        else
+        else 
         {
             isWallSliding = false;
         }
@@ -127,15 +121,13 @@ public class PlayerMovement : PlayerController
             WallJump();
         }
     }
+
     void WallJump()
     {
         if (canJump && onWall)
         {
             rb.AddForce(new Vector2(walljumpforce * walljumpAngle.x * direction, walljumpforce * walljumpAngle.y), ForceMode2D.Impulse);
             canJump = false;
-            Flip();
         }
     }
-
-    
 }

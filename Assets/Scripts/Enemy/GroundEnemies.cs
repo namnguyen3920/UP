@@ -3,6 +3,7 @@ using UnityEngine;
 
 public abstract class GroundEnemies : Enemy
 {
+    private const string DEAD_TRIG = "Dead";
     [Header("Checking Collision")]
     [SerializeField] private Transform checkPointCollision;
     [SerializeField] private Transform checkPointGround;
@@ -11,6 +12,14 @@ public abstract class GroundEnemies : Enemy
     [SerializeField] LayerMask groundLayerMask;
     [SerializeField] float groundCheckRadius;
 
+    [Header("Other")]
+    [SerializeField] Animator enemy_aim;
+    protected override void Awake()
+    {
+        base.Awake();
+        enemy_aim = GetComponent<Animator>();
+    }
+    
     protected virtual void Update()
     {
         CollisionCheck();
@@ -33,20 +42,22 @@ public abstract class GroundEnemies : Enemy
         }
     }
 
+    protected virtual IEnumerator DeadPropertiesSettings()
+    {
+        DeadAnimation(enemy_aim, DEAD_TRIG);
+        yield return new WaitForSeconds(0.4f);
+        GetComponent<CapsuleCollider2D>().enabled = false;
+        GetComponentInChildren<GroundEnemies>().enabled = false;
+        rb.gravityScale = 2;
+        yield return new WaitForSeconds(1f);
+        DeadEnemiesPooling.d_Instance.ReturnEnemiesToPool(enemiesPrefabs);
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawCube(checkPointCollision.position, collisionCheckSize);
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(checkPointGround.position, groundCheckRadius);
-    }
-
-    protected virtual IEnumerator DeadPropertiesSettings()
-    {
-        GetComponent<CapsuleCollider2D>().enabled = false;
-        GetComponentInChildren<GroundEnemies>().enabled = false;
-        rb.gravityScale = 2;
-        yield return new WaitForSeconds(1f);
-        DeadEnemiesPooling.d_Instance.ReturnEnemiesToPool(enemiesPrefabs);
     }
 }

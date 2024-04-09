@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Chicken : GroundEnemies
 {
-    [SerializeField] Animator chicken_anim;
     [SerializeField] float chicken_speed;
+    
     protected override void Update()
     {
         base.Update();
@@ -16,7 +16,6 @@ public class Chicken : GroundEnemies
     {
         if(collision.CompareTag("PlayerFeet")) 
         {
-            AnimationMN.d_Instance.SetTriggerDead(chicken_anim, "Dead");
             StartCoroutine(DeadPropertiesSettings());
         }
     }
