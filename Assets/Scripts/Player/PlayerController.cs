@@ -1,5 +1,7 @@
 ﻿
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.SceneManagement;
 
 public delegate void UpdateAnimation();
 
@@ -51,37 +53,31 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
         AnimateUpdate?.Invoke();
         Inputs();
         CheckWorld();
+        AnimationBoolControl();
         AnimationFloatControl();
     }
 
     protected virtual void FixedUpdate()
     {
         AnimateUpdate?.Invoke();
-        AnimationBoolControl();
-        AnimationTriggerControl();
     }
 
-    public bool Die()
+    public void Die()
     {
         rb.bodyType = RigidbodyType2D.Static;
-        return isDead = true;
+        isDead = true;
+        AnimationTriggerControl();
     }
 
     public void Inputs()
     {
         if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
         {
+            SoundFXCtrl.d_Instance.PlayFXSound(transform, 0.5f);
             canJump = true;
             isJumping = true;
         }
     }
-    /*private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Traps") || collision.gameObject.CompareTag("Enemy"))
-        {
-            Die();
-        }
-    }*/
 
     public void CheckWorld()
     {
@@ -89,20 +85,19 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
         isTouchingWall = Physics2D.OverlapCircle(wallCheckPoint.position, wallCheckRadius, wallLayer);
         onWall = Physics2D.OverlapBox(onWallCheckPoint.position, onWallCheckSize, 0, wallLayer);
     }
-
-    protected void AnimationBoolControl()
+    private void AnimationBoolControl()
     {
         anim.SetBool(IS_GROUND, IsGround);
         anim.SetBool(IS_JUMPING, IsJumping());
         anim.SetBool(IS_WALLSLIDING, IsWallSliding());
     }
 
-    protected void AnimationFloatControl()
+    private void AnimationFloatControl()
     {
         anim.SetFloat("yVelocity", rb.velocity.y);
     }
 
-    protected void AnimationTriggerControl()
+    private void AnimationTriggerControl()
     {
         anim.SetTrigger(IS_DEAD);
     }
@@ -121,6 +116,19 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
     public float VelocityY => rb.velocity.y;
     #endregion
 
+
+    void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("Enemy") || collision.gameObject.CompareTag("Traps"))
+        {
+            Die();
+        }
+    }
     private void OnDrawGizmosSelected()
     {
         /*Gizmos.color = Color.blue;

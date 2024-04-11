@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class StompBox : MonoBehaviour
 {
-    PlayerMovement movement;
     [SerializeField] float bounce;
     [SerializeField] Rigidbody2D rb;
 
@@ -13,7 +12,7 @@ public class StompBox : MonoBehaviour
         if (collision.CompareTag("StompSpot"))
         {
             Debug.Log("Hit!!!!");
-            rb.velocity = new Vector2(rb.velocity.x, bounce);            
+            rb.velocity = new Vector2(rb.velocity.x-0.1f, bounce);
         }
     }
 }

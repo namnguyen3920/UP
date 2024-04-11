@@ -171,8 +171,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0025165756, y: -0.56015354}
-  m_Size: {x: 1.8596174, y: 1.0047082}
+  m_Offset: {x: -0.08146035, y: -0.36345276}
+  m_Size: {x: 1.7017324, y: 1.3981408}
   m_Direction: 1
 --- !u!114 &2483760793183774773
 MonoBehaviour:
@@ -199,6 +199,7 @@ MonoBehaviour:
     m_Bits: 64
   groundCheckRadius: 0.06
   enemy_aim: {fileID: 7758887773336798731}
+  hitbox: {fileID: 6825507255916082627}
   chicken_speed: 1
 --- !u!1 &4184692869710115240
 GameObject:
@@ -209,7 +210,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6825507255916082627}
-  - component: {fileID: 726310826073246722}
+  - component: {fileID: 833115718492638051}
   m_Layer: 0
   m_Name: HitBox
   m_TagString: StompSpot
@@ -226,14 +227,14 @@ Transform:
   m_GameObject: {fileID: 4184692869710115240}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.03, z: 0}
+  m_LocalPosition: {x: -0.021, y: 0.179, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2927410753375382989}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &726310826073246722
-BoxCollider2D:
+--- !u!70 &833115718492638051
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -264,19 +265,9 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.01144731, y: 0.14816786}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.2856691, y: 0.38848588}
-  m_EdgeRadius: 0
+  m_Offset: {x: 0.118485406, y: 0.117688864}
+  m_Size: {x: 1.0764265, y: 0.3424276}
+  m_Direction: 1
 --- !u!1 &4404027615550737365
 GameObject:
   m_ObjectHideFlags: 0

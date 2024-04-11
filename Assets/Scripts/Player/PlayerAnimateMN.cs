@@ -2,14 +2,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAnimateMN : MonoBehaviour
+public class PlayerAnimateMN
 {
-    /*private const string IS_Ground = "isGround";
+    /*PlayerController controller;
+    private const string IS_GROUND = "isGround";
     private const string IS_JUMPING = "isJumping";
     private const string IS_WALLSLIDING = "isWallSliding";
-    private const string IS_DEAD = "Death";
+    private const string IS_DEAD = "Death";*/
 
-    private PlayerMovement player;
+    /*public void PlayerAnimationUpdate()
+    {
+        *//*controller.AnimationFloatControl();
+        controller.AnimationTriggerControl();
+        controller.AnimationBoolControl();*//*
+        AnimationBoolControl();
+        AnimationFloatControl();
+        AnimationTriggerControl();
+    }
+
+    private void AnimationBoolControl()
+    {
+        anim.SetBool(IS_GROUND, controller.IsGround);
+        anim.SetBool(IS_JUMPING, controller.IsJumping());
+        anim.SetBool(IS_WALLSLIDING, controller.IsWallSliding());
+    }
+
+    private void AnimationFloatControl()
+    {
+        anim.SetFloat("yVelocity", rb.velocity.y);
+    }
+
+    private void AnimationTriggerControl()
+    {
+        anim.SetTrigger(IS_DEAD);
+    }*/
+    
+
+    /*private PlayerMovement player;
     [SerializeField] Animator anim;
 
     private void Update()

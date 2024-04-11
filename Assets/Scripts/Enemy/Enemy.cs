@@ -6,8 +6,7 @@ public abstract class Enemy : Singleton_Mono_Method<Enemy>
     protected int moveSpeed;
     protected int direction = -1;
 
-    [SerializeField] protected Transform enemiesPrefabs;
-    [SerializeField] Transform hitbox;
+    [SerializeField] protected Transform enemiesPrefabs;    
     protected Rigidbody2D rb;
     protected DeadEnemiesPooling enemiesPool;
 

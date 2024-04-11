@@ -14,6 +14,7 @@ public abstract class GroundEnemies : Enemy
 
     [Header("Other")]
     [SerializeField] Animator enemy_aim;
+    [SerializeField] Transform hitbox;
     protected override void Awake()
     {
         base.Awake();
@@ -44,10 +45,11 @@ public abstract class GroundEnemies : Enemy
 
     protected virtual IEnumerator DeadPropertiesSettings()
     {
-        DeadAnimation(enemy_aim, DEAD_TRIG);
-        yield return new WaitForSeconds(0.4f);
         GetComponent<CapsuleCollider2D>().enabled = false;
+        hitbox.GetComponent<CapsuleCollider2D>().enabled = false;
         GetComponentInChildren<GroundEnemies>().enabled = false;
+        transform.position = new Vector2(transform.position.x, transform.position.y + 0.2f);
+        DeadAnimation(enemy_aim, DEAD_TRIG);
         rb.gravityScale = 2;
         yield return new WaitForSeconds(1f);
         DeadEnemiesPooling.d_Instance.ReturnEnemiesToPool(enemiesPrefabs);
