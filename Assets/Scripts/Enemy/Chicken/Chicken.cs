@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Chicken : GroundEnemies
 {
-    [SerializeField] float chicken_speed;
-    
+    [SerializeField] float chicken_speed;    
     protected override void Update()
     {
         base.Update();

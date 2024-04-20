@@ -187,7 +187,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemiesPrefabs: {fileID: 2927410753375382989}
-  hitbox: {fileID: 6825507255916082627}
   checkPointCollision: {fileID: 524971134831415787}
   checkPointGround: {fileID: 1320302747500566898}
   collisionCheckSize: {x: 0.14, y: 0.27}
@@ -196,7 +195,7 @@ MonoBehaviour:
     m_Bits: 384
   groundLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 1096
   groundCheckRadius: 0.06
   enemy_aim: {fileID: 7758887773336798731}
   hitbox: {fileID: 6825507255916082627}

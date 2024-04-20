@@ -47,9 +47,8 @@ public class PlayerMovement : PlayerController
         
     }
 
-    protected override void FixedUpdate()
+    protected void FixedUpdate()
     {
-        base.FixedUpdate();
         Movement(direction);
         Jump();
         WallSlide();

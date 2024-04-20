@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public abstract class Enemy : Singleton_Mono_Method<Enemy>
@@ -6,9 +5,8 @@ public abstract class Enemy : Singleton_Mono_Method<Enemy>
     protected int moveSpeed;
     protected int direction = -1;
 
-    [SerializeField] protected Transform enemiesPrefabs;    
+    [SerializeField] protected Transform enemiesPrefabs;
     protected Rigidbody2D rb;
-    protected DeadEnemiesPooling enemiesPool;
 
     protected virtual void Awake()
     {
@@ -19,7 +17,7 @@ public abstract class Enemy : Singleton_Mono_Method<Enemy>
     {
         rb.velocity = new Vector2(moveSpeed * direction, rb.velocity.y);
     }
-    protected virtual void DeadAnimation(Animator enemy_aim, string e_dead)
+    protected virtual void EnemyDeadAnimation(Animator enemy_aim, string e_dead)
     {
         AnimationMN.d_Instance.SetTriggerAction(enemy_aim, e_dead);
     }

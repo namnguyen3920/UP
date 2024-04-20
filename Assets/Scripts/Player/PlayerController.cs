@@ -1,13 +1,11 @@
 ﻿
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 using UnityEngine.SceneManagement;
-
-public delegate void UpdateAnimation();
 
 public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
 {
-
+    [HideInInspector]
+    Animator anim;
     protected Rigidbody2D rb;
     private const string IS_GROUND = "isGround";
     private const string IS_JUMPING = "isJumping";
@@ -40,8 +38,6 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
     [SerializeField] protected bool isMoving;
     [SerializeField] protected bool isDead;
 
-    public event UpdateAnimation AnimateUpdate;
-    Animator anim;
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -50,16 +46,10 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
 
     protected virtual void Update()
     {
-        AnimateUpdate?.Invoke();
         Inputs();
         CheckWorld();
         AnimationBoolControl();
         AnimationFloatControl();
-    }
-
-    protected virtual void FixedUpdate()
-    {
-        AnimateUpdate?.Invoke();
     }
 
     public void Die()
@@ -73,7 +63,7 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
     {
         if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
         {
-            SoundFXCtrl.d_Instance.PlayFXSound(transform, 0.5f);
+            MusicMN.d_Instance.PlaySFX(SoundType.Jump);
             canJump = true;
             isJumping = true;
         }

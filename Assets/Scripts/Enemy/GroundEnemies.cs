@@ -1,9 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class GroundEnemies : Enemy
 {
     private const string DEAD_TRIG = "Dead";
+
     [Header("Checking Collision")]
     [SerializeField] private Transform checkPointCollision;
     [SerializeField] private Transform checkPointGround;
@@ -15,9 +17,11 @@ public abstract class GroundEnemies : Enemy
     [Header("Other")]
     [SerializeField] Animator enemy_aim;
     [SerializeField] Transform hitbox;
+    
     protected override void Awake()
     {
         base.Awake();
+        
         enemy_aim = GetComponent<Animator>();
     }
     
@@ -49,10 +53,11 @@ public abstract class GroundEnemies : Enemy
         hitbox.GetComponent<CapsuleCollider2D>().enabled = false;
         GetComponentInChildren<GroundEnemies>().enabled = false;
         transform.position = new Vector2(transform.position.x, transform.position.y + 0.2f);
-        DeadAnimation(enemy_aim, DEAD_TRIG);
+        EnemyDeadAnimation(enemy_aim, DEAD_TRIG);
         rb.gravityScale = 2;
         yield return new WaitForSeconds(1f);
-        DeadEnemiesPooling.d_Instance.ReturnEnemiesToPool(enemiesPrefabs);
+        DeadEnemiesPooling.d_Instance.DeadEnemiesCollector(enemiesPrefabs);
+        /*ObjectPooling.d_Instance.ReturnObjToPool(enemiesPrefabs, enemiesPool.DeadEnemiesPool);*/
     }
 
     private void OnDrawGizmos()
