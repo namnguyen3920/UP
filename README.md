@@ -23,8 +23,6 @@
     <h3>Updated game ui + theme/sfx sound + scrolling background</h3>
     <br>
     <div align="center">
-        <img src="Demo/game_ui.gif">
-        <br>
-        <img src="Demo/settings_menu.gif">
+        <img src="Demo/settings_menu.gif" width = 280px height = 500px>
     </div>
 </div>
