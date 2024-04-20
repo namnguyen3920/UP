@@ -8,6 +8,10 @@ TagManager:
   - Ground
   - Collision
   - Wall
+  - Traps
+  - Enemy
+  - StompSpot
+  - PlayerFeet
   layers:
   - Default
   - TransparentFX
@@ -17,10 +21,10 @@ TagManager:
   - UI
   - Ground
   - Wall
-  - 
-  - 
-  - 
-  - 
+  - Traps
+  - Enemy
+  - GroundBase
+  - Player
   - 
   - 
   - 
