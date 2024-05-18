@@ -12,9 +12,14 @@ public class PoolManager : Singleton_Mono_Method<PoolManager>
         ReturnObjToPool(dead_enemy, DeadEnemiesPool);
     }
 
-    public void GetCoin(Transform coin_prefab)
+    public void CoinCollected(Transform coin_prefab)
     {
         ReturnObjToPool(coin_prefab, CoinPool);
+    }
+
+    public int GetCoinAmount()
+    {
+        return CoinPool.Count;
     }
 
     void ReturnObjToPool(Transform d_obj, List<Transform> pool)

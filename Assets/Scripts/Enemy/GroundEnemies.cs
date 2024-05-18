@@ -20,8 +20,7 @@ public abstract class GroundEnemies : Enemy
     
     protected override void Awake()
     {
-        base.Awake();
-        
+        base.Awake();        
         enemy_aim = GetComponent<Animator>();
     }
     
@@ -46,18 +45,25 @@ public abstract class GroundEnemies : Enemy
             transform.Rotate(0, 180, 0);
         }
     }
+    protected override void Moving(int direction, float moveSpeed)
+    {
+        enemyRB.velocity = new Vector2(moveSpeed * direction, enemyRB.velocity.y);
+    }
 
     protected virtual IEnumerator DeadPropertiesSettings()
     {
+        
         GetComponent<CapsuleCollider2D>().enabled = false;
         hitbox.GetComponent<CapsuleCollider2D>().enabled = false;
         GetComponentInChildren<GroundEnemies>().enabled = false;
-        transform.position = new Vector2(transform.position.x, transform.position.y + 0.2f);
+        transform.position = new Vector2(transform.position.x, transform.position.y);
+        enemyRB.velocity = Vector2.up;
         EnemyDeadAnimation(enemy_aim, DEAD_TRIG);
-        rb.gravityScale = 2;
+        yield return new WaitForSeconds(0.2f);
+        enemyRB.gravityScale = 2;
         yield return new WaitForSeconds(1f);
         DeadEnemiesPooling.d_Instance.DeadEnemiesCollector(enemiesPrefabs);
-        /*ObjectPooling.d_Instance.ReturnObjToPool(enemiesPrefabs, enemiesPool.DeadEnemiesPool);*/
+        
     }
 
     private void OnDrawGizmos()

@@ -5,12 +5,14 @@ using UnityEngine.SceneManagement;
 public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
 {
     [HideInInspector]
-    Animator anim;
+    
     protected Rigidbody2D rb;
     private const string IS_GROUND = "isGround";
     private const string IS_JUMPING = "isJumping";
     private const string IS_WALLSLIDING = "isWallSliding";
     private const string IS_DEAD = "Death";
+
+    [SerializeField] Animator anim;
 
     [Header("Ground Checking Collision")]
     [SerializeField] LayerMask groundLayer;
@@ -37,11 +39,12 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
     [Header("Status checking")]
     [SerializeField] protected bool isMoving;
     [SerializeField] protected bool isDead;
+    [SerializeField] public bool isIdle = false;
 
     protected virtual void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
+        //anim = GetComponent<Animator>();
     }
 
     protected virtual void Update()
@@ -61,11 +64,13 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
 
     public void Inputs()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
-        {
-            MusicMN.d_Instance.PlaySFX(SoundType.Jump);
-            canJump = true;
-            isJumping = true;
+        if (!isIdle) { 
+            if (Input.GetKeyDown(KeyCode.Space) && grounded || Input.GetKeyDown(KeyCode.Space) && isWallSliding)
+            {
+                MusicMN.d_Instance.PlaySFX(SoundType.Jump);
+                canJump = true;
+                isJumping = true;
+            }
         }
     }
 
@@ -91,6 +96,7 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
     {
         anim.SetTrigger(IS_DEAD);
     }
+
     #region
     public bool IsGround
     {
@@ -106,10 +112,10 @@ public abstract class PlayerController : Singleton_Mono_Method<PlayerController>
     public float VelocityY => rb.velocity.y;
     #endregion
 
-
     void RestartLevel()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        /*SceneManager.LoadScene(SceneManager.GetActiveScene().name);*/
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

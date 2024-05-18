@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 public class Chicken : GroundEnemies
@@ -15,6 +14,7 @@ public class Chicken : GroundEnemies
     {
         if(collision.CompareTag("PlayerFeet")) 
         {
+            chicken_speed = 0;
             StartCoroutine(DeadPropertiesSettings());
         }
     }

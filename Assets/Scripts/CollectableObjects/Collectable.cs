@@ -16,6 +16,6 @@ public abstract class Collectable : MonoBehaviour
 
     public void CoinCollected(Transform obj_prefab)
     {
-        PoolManager.d_Instance.GetCoin(obj_prefab);
+        PoolManager.d_Instance.CoinCollected(obj_prefab);
     }
 }

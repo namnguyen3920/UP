@@ -37,12 +37,14 @@ public class PlayerMovement : PlayerController
 
     protected override void Update()
     {
+        
         base.Update();
         /*if (coyoteTime > 0)
         {
             coyoteTime -= Time.deltaTime;
         }*/
-
+        
+        
         XDirectional = transform.position.x;
         
     }
